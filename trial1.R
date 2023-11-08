@@ -11,28 +11,28 @@ biomarkers_data <- as.data.frame(biomarkers_data)
 covariates_data <- as.data.frame(covariates_data)
 
 
-biomarkers_data
-covariates_data
+#biomarkers_data
+#covariates_data
 
 
 
 ## HYPOTHESIS TEST
 
-# considering whether biomarkers vary between males and females at start
+# considering whether biomarkers vary between males and females at inclusion
 # mu_m: biomarkers level male
 # mu_f biomarkers level female
 # H_0: mu_m = mu_f
 # H_a: mu_m != mu_f
-# also want to consider if any difference occurs with age ##NB PATIENT ID =40  HAS NO BIOMARKERS DATA
 
 
-# combine biomarkers data with covariates data
+## in these lines we combine the biomarkers and covariates data by sorting by patient number
+## we can clean up the data by looking at biomarkers at inclusion only
 
-patient_number <- as.numeric(sapply(strsplit(biomarkers_data$Biomarker, "-"), '[', 1))                                ## find patient numbers in biomarkers data
-biomarkers_data <- biomarkers_data[order(patient_number),]                                                            ## sort biomarkers data by patient number
-filtered_data <- biomarkers_data[grep("-0weeks$", biomarkers_data$Biomarker),]                                        ## filter biomarkers data by data from inclusion only
-filtered_data$patient_number <- as.numeric(sapply(strsplit(filtered_data$Biomarker, "-"), '[', 1))                    ## patient numbers vector
-master_data <- merge(covariates_data, filtered_data, by.x = "PatientID", by.y = "patient_number", all.x = TRUE)       ## merge by patient number
+patient_number <- as.numeric(sapply(strsplit(biomarkers_data$Biomarker, "-"), '[', 1))                    
+biomarkers_data <- biomarkers_data[order(patient_number),]                                                       
+filtered_data <- biomarkers_data[grep("-0weeks$", biomarkers_data$Biomarker),]                               
+filtered_data$patient_number <- as.numeric(sapply(strsplit(filtered_data$Biomarker, "-"), '[', 1))            
+master_data <- merge(covariates_data, filtered_data, by.x = "PatientID", by.y = "patient_number", all.x = TRUE)       
 
 combined_data <- master_data[master_data$PatientID != 40, ]   ## removing patient 40 since they have no biomarkers data
 biomarkers <- c("IL-8", "VEGF-A", "OPG", "TGF-beta-1", "IL-6", "CXCL9", "CXCL1", "IL-18", "CSF-1")
